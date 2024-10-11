@@ -21,17 +21,17 @@ func main() {
 	var wg sync.WaitGroup
 
 	increment := func() {
+		defer wg.Done()
 		for {
 			current := atomic.LoadInt64(&counter)
 			if current >= endCounterValue {
-				wg.Done()
 				return
 			}
 			atomic.CompareAndSwapInt64(&counter, current, current+step)
 		}
 	}
 
-	for range gNum {
+	for i := 0; i < gNum; i++ {
 		wg.Add(1)
 		go increment()
 	}
